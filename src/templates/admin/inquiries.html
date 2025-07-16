@@ -1,0 +1,258 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Inquiries{% endblock %}
+{% block page_title %}Contact Inquiries{% endblock %}
+
+{% block admin_content %}
+<!-- Filter and Stats -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="GET" class="d-flex">
+            <select class="form-select me-2" name="status" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="new" {{ 'selected' if status_filter == 'new' }}>New</option>
+                <option value="read" {{ 'selected' if status_filter == 'read' }}>Read</option>
+                <option value="responded" {{ 'selected' if status_filter == 'responded' }}>Responded</option>
+            </select>
+        </form>
+    </div>
+    <div class="col-md-4 text-end">
+        <span class="badge bg-info fs-6">{{ inquiries.total }} total inquiries</span>
+    </div>
+</div>
+
+<!-- Inquiries Table -->
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Contact Inquiries</h6>
+    </div>
+    <div class="card-body">
+        {% if inquiries.items %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Property</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inquiry in inquiries.items %}
+                        <tr class="{{ 'table-warning' if inquiry.status == 'new' }}">
+                            <td>{{ inquiry.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <strong>{{ inquiry.name }}</strong>
+                                {% if inquiry.status == 'new' %}
+                                    <span class="badge bg-warning ms-1">New</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="mailto:{{ inquiry.email }}" class="text-decoration-none">
+                                    {{ inquiry.email }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if inquiry.phone %}
+                                    <a href="tel:{{ inquiry.phone }}" class="text-decoration-none">
+                                        {{ inquiry.phone }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if inquiry.property %}
+                                    <a href="{{ url_for('admin.get_property', property_id=inquiry.property_id) }}" 
+                                       class="text-decoration-none">
+                                        {{ inquiry.property_title }}
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">General Inquiry</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ 'warning' if inquiry.status == 'new' else 'info' if inquiry.status == 'read' else 'success' }}">
+                                    {{ inquiry.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            data-bs-toggle="modal" data-bs-target="#inquiryModal{{ inquiry.id }}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <a href="mailto:{{ inquiry.email }}" class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-reply"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteInquiry({{ inquiry.id }})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if inquiries.pages > 1 %}
+            <nav aria-label="Inquiries pagination">
+                <ul class="pagination justify-content-center">
+                    {% if inquiries.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.list_inquiries', page=inquiries.prev_num, status=status_filter) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in inquiries.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != inquiries.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.list_inquiries', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if inquiries.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.list_inquiries', page=inquiries.next_num, status=status_filter) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-envelope fa-3x text-gray-300 mb-3"></i>
+                <p class="text-muted">No inquiries found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Inquiry Detail Modals -->
+{% for inquiry in inquiries.items %}
+<div class="modal fade" id="inquiryModal{{ inquiry.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Inquiry from {{ inquiry.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ inquiry.name }}</p>
+                        <p><strong>Email:</strong> 
+                            <a href="mailto:{{ inquiry.email }}">{{ inquiry.email }}</a>
+                        </p>
+                        <p><strong>Phone:</strong> 
+                            {% if inquiry.phone %}
+                                <a href="tel:{{ inquiry.phone }}">{{ inquiry.phone }}</a>
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Property:</strong> 
+                            {% if inquiry.property %}
+                                <a href="{{ url_for('admin.get_property', property_id=inquiry.property_id) }}">
+                                    {{ inquiry.property_title }}
+                                </a>
+                            {% else %}
+                                General Inquiry
+                            {% endif %}
+                        </p>
+                        <p><strong>Date:</strong> {{ inquiry.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-{{ 'warning' if inquiry.status == 'new' else 'info' if inquiry.status == 'read' else 'success' }}">
+                                {{ inquiry.status.title() }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div>
+                    <strong>Message:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">
+                        {{ inquiry.message }}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="mailto:{{ inquiry.email }}?subject=Re: Your Property Inquiry" class="btn btn-primary">
+                    <i class="bi bi-reply"></i> Reply via Email
+                </a>
+                <button type="button" class="btn btn-success" onclick="markAsResponded({{ inquiry.id }})">
+                    <i class="bi bi-check"></i> Mark as Responded
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.fa-3x {
+    font-size: 3em;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.table-warning {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteInquiry(inquiryId) {
+    if (confirm('Are you sure you want to delete this inquiry?')) {
+        // TODO: Implement delete functionality
+        alert('Delete functionality will be implemented');
+    }
+}
+
+function markAsResponded(inquiryId) {
+    // TODO: Implement status update functionality
+    alert('Status update functionality will be implemented');
+}
+
+// Mark inquiry as read when modal is opened
+document.addEventListener('DOMContentLoaded', function() {
+    const modals = document.querySelectorAll('[id^="inquiryModal"]');
+    modals.forEach(modal => {
+        modal.addEventListener('shown.bs.modal', function() {
+            const inquiryId = this.id.replace('inquiryModal', '');
+            // TODO: Mark as read via AJAX
+        });
+    });
+});
+</script>
+{% endblock %}
+

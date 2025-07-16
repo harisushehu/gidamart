@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="{{ url_for('public.home') }}">
+            <i class="bi bi-house-door-fill"></i> Gidamart
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'public.home' }}" 
+                       href="{{ url_for('public.home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if 'properties' in request.endpoint }}" 
+                       href="{{ url_for('public.properties') }}">Find a Property</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'public.services' }}" 
+                       href="{{ url_for('public.services') }}">Services</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.endpoint == 'public.contact' }}" 
+                       href="{{ url_for('public.contact') }}">Contact</a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav">
+                {% if session.user_id %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ session.user_email }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if session.is_admin %}
+                                <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="bi bi-speedometer2"></i> Admin Dashboard
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('public.logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('public.login') }}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary text-white ms-2 px-3" href="{{ url_for('public.register') }}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<main style="margin-top: 76px;">
+    {% block public_content %}{% endblock %}
+</main>
+{% endblock %}
+
+{% block footer %}
+<footer class="bg-dark text-white py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5 class="fw-bold mb-3">
+                    <i class="bi bi-house-door-fill"></i> Gidamart
+                </h5>
+                <p class="text-light">Your trusted partner in real estate. We help you find the perfect property for sale or rent in Nigeria.</p>
+                <div class="d-flex">
+                    <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="fw-bold mb-3">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{{ url_for('public.home') }}" class="text-light text-decoration-none">Home</a></li>
+                    <li><a href="{{ url_for('public.properties') }}" class="text-light text-decoration-none">Properties</a></li>
+                    <li><a href="{{ url_for('public.services') }}" class="text-light text-decoration-none">Services</a></li>
+                    <li><a href="{{ url_for('public.contact') }}" class="text-light text-decoration-none">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6 class="fw-bold mb-3">Services</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-light text-decoration-none">Property Sales</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Property Rentals</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Property Management</a></li>
+                    <li><a href="#" class="text-light text-decoration-none">Real Estate Consultation</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-lg-3 mb-4">
+                <h6 class="fw-bold mb-3">Contact Info</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-geo-alt"></i> Yobe State, Nigeria
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-telephone"></i> +234 123 456 7890
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-envelope"></i> info@gidamart.com
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2025 Gidamart. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="text-light text-decoration-none me-3">Privacy Policy</a>
+                <a href="#" class="text-light text-decoration-none">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--bs-primary) !important;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--bs-primary) !important;
+    transition: color 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.text-primary {
+    color: #667eea !important;
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+</style>
+{% endblock %}
+

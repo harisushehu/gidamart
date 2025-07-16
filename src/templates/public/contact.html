@@ -1,0 +1,369 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}Contact Us - Gidamart{% endblock %}
+
+{% block public_content %}
+<!-- Page Header -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+                <p class="lead">Get in touch with our expert real estate team</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="contact-icon bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="bi bi-geo-alt" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Our Office</h5>
+                        <p class="text-muted">
+                            123 Real Estate Avenue<br>
+                            Damaturu, Yobe State<br>
+                            Nigeria
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="contact-icon bg-success text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="bi bi-telephone" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Phone Numbers</h5>
+                        <p class="text-muted">
+                            <a href="tel:+2341234567890" class="text-decoration-none">+234 123 456 7890</a><br>
+                            <a href="tel:+2349876543210" class="text-decoration-none">+234 987 654 3210</a><br>
+                            <small>Mon - Fri: 8AM - 6PM</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="contact-icon bg-info text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px;">
+                            <i class="bi bi-envelope" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h5 class="fw-bold">Email Addresses</h5>
+                        <p class="text-muted">
+                            <a href="mailto:info@gidamart.com" class="text-decoration-none">info@gidamart.com</a><br>
+                            <a href="mailto:sales@gidamart.com" class="text-decoration-none">sales@gidamart.com</a><br>
+                            <a href="mailto:support@gidamart.com" class="text-decoration-none">support@gidamart.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-8 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">Send us a Message</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="property_id" class="form-label">Property of Interest</label>
+                                    <select class="form-select" id="property_id" name="property_id">
+                                        <option value="">Select a property (optional)</option>
+                                        <!-- This would be populated with actual properties -->
+                                        <option value="1">Luxury Villa in Damaturu</option>
+                                        <option value="2">Modern Apartment in Potiskum</option>
+                                        <option value="3">Commercial Space in Gashua</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <select class="form-select" id="subject" name="subject">
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="buying">Buying Property</option>
+                                    <option value="selling">Selling Property</option>
+                                    <option value="renting">Renting Property</option>
+                                    <option value="management">Property Management</option>
+                                    <option value="valuation">Property Valuation</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message *</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" 
+                                          placeholder="Tell us how we can help you..." required></textarea>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="newsletter">
+                                <label class="form-check-label" for="newsletter">
+                                    Subscribe to our newsletter for property updates and market insights
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-send"></i> Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map and Additional Info -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Find Us</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Embedded Map -->
+                        <div id="map" style="height: 300px; width: 100%;">
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3937.8!2d11.7!3d11.7!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDQyJzAwLjAiTiAxMcKwNDInMDAuMCJF!5e0!3m2!1sen!2sng!4v1234567890"
+                                width="100%" 
+                                height="300" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold">Office Hours</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</li>
+                            <li><strong>Saturday:</strong> 9:00 AM - 4:00 PM</li>
+                            <li><strong>Sunday:</strong> Closed</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold mb-3">Need Immediate Assistance?</h6>
+                        <p class="text-muted mb-3">Our team is available for urgent property matters</p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="tel:+2341234567890" class="btn btn-success">
+                                <i class="bi bi-telephone"></i> Call Now
+                            </a>
+                            <a href="https://wa.me/2341234567890" class="btn btn-outline-success" target="_blank">
+                                <i class="bi bi-whatsapp"></i> WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Frequently Asked Questions</h2>
+                <p class="lead text-muted">Quick answers to common questions</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I schedule a property viewing?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can schedule a property viewing by contacting us through this form, calling our office, or clicking the "Contact Agent" button on any property listing. We'll arrange a convenient time for you to visit the property.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                What documents do I need to buy a property?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Typically, you'll need valid identification, proof of income, bank statements, and pre-approval for financing if applicable. Our team will guide you through the complete documentation process.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Do you offer property management services?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we offer comprehensive property management services including tenant screening, rent collection, maintenance coordination, and financial reporting for property owners.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How long does the buying process take?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                The buying process typically takes 2-4 weeks from offer acceptance to completion, depending on financing, legal checks, and documentation. We'll keep you informed throughout the entire process.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.contact-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.accordion-button:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.text-decoration-none:hover {
+    text-decoration: underline !important;
+}
+
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .contact-icon {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    .contact-icon i {
+        font-size: 1.2rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-populate property selection if coming from a property page
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('property_id');
+    
+    if (propertyId) {
+        const propertySelect = document.getElementById('property_id');
+        if (propertySelect) {
+            propertySelect.value = propertyId;
+        }
+    }
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    if (!name || !email || !message) {
+        e.preventDefault();
+        alert('Please fill in all required fields.');
+        return false;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        e.preventDefault();
+        alert('Please enter a valid email address.');
+        return false;
+    }
+});
+</script>
+{% endblock %}
+

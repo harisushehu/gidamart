@@ -1,0 +1,291 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}Properties - Gidamart{% endblock %}
+
+{% block public_content %}
+<!-- Page Header -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold mb-3">Find Your Perfect Property</h1>
+                <p class="lead text-muted">Browse our extensive collection of properties for sale and rent</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filters Section -->
+<section class="py-4 bg-white shadow-sm">
+    <div class="container">
+        <form method="GET" class="row g-3">
+            <div class="col-md-2">
+                <select class="form-select" name="type">
+                    <option value="">All Types</option>
+                    <option value="sale" {{ 'selected' if filters.type == 'sale' }}>For Sale</option>
+                    <option value="rent" {{ 'selected' if filters.type == 'rent' }}>For Rent</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="location" 
+                       placeholder="Location" value="{{ filters.location or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" name="min_price" 
+                       placeholder="Min Price" value="{{ filters.min_price or '' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" class="form-control" name="max_price" 
+                       placeholder="Max Price" value="{{ filters.max_price or '' }}">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="bedrooms">
+                    <option value="">Any Bedrooms</option>
+                    <option value="1" {{ 'selected' if filters.bedrooms == 1 }}>1+</option>
+                    <option value="2" {{ 'selected' if filters.bedrooms == 2 }}>2+</option>
+                    <option value="3" {{ 'selected' if filters.bedrooms == 3 }}>3+</option>
+                    <option value="4" {{ 'selected' if filters.bedrooms == 4 }}>4+</option>
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Properties Grid -->
+<section class="py-5">
+    <div class="container">
+        {% if properties.items %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <p class="text-muted">Showing {{ properties.items|length }} of {{ properties.total }} properties</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                {% for property in properties.items %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card property-card h-100 shadow-sm">
+                        <div class="position-relative">
+                            {% if property.images %}
+                                <img src="{{ url_for('static', filename='uploads/' + property.images[0].image_filename) }}" 
+                                     class="card-img-top" alt="{{ property.title }}" style="height: 250px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 250px;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-{{ 'success' if property.property_type == 'sale' else 'info' }} fs-6">
+                                    For {{ property.property_type.title() }}
+                                </span>
+                            </div>
+                            
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-primary fs-6">₦{{ "{:,.0f}".format(property.price) }}</span>
+                            </div>
+                            
+                            <div class="position-absolute bottom-0 end-0 m-3">
+                                <button class="btn btn-light btn-sm rounded-circle" onclick="toggleFavorite({{ property.id }})">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ property.title }}</h5>
+                            <p class="card-text text-muted mb-2">
+                                <i class="bi bi-geo-alt"></i> {{ property.location }}
+                            </p>
+                            <p class="card-text">{{ property.description[:100] }}...</p>
+                            
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <small class="text-muted">
+                                        <i class="bi bi-door-open"></i><br>
+                                        {{ property.bedrooms }} Beds
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">
+                                        <i class="bi bi-droplet"></i><br>
+                                        {{ property.bathrooms }} Baths
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">
+                                        <i class="bi bi-arrows-fullscreen"></i><br>
+                                        {{ property.area_sqft }} sq ft
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('public.property_detail', property_id=property.id) }}" 
+                                   class="btn btn-primary flex-fill">
+                                    <i class="bi bi-eye"></i> View Details
+                                </a>
+                                <a href="{{ url_for('public.contact') }}?property_id={{ property.id }}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="bi bi-envelope"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if properties.pages > 1 %}
+            <nav aria-label="Properties pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if properties.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('public.properties', page=properties.prev_num, **filters) }}">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in properties.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != properties.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('public.properties', page=page_num, **filters) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if properties.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('public.properties', page=properties.next_num, **filters) }}">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-search" style="font-size: 4rem; color: #ccc;"></i>
+                <h4 class="mt-3 text-muted">No properties found</h4>
+                <p class="text-muted">Try adjusting your search filters or check back later for new listings.</p>
+                <a href="{{ url_for('public.properties') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Clear Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h3 class="fw-bold mb-3">Can't Find What You're Looking For?</h3>
+                <p class="mb-4">Let our experts help you find the perfect property that matches your needs and budget.</p>
+                <a href="{{ url_for('public.contact') }}" class="btn btn-light btn-lg">
+                    <i class="bi bi-telephone"></i> Contact Our Experts
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.property-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.card-img-top {
+    transition: transform 0.3s ease;
+}
+
+.property-card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.badge {
+    font-size: 0.75rem !important;
+}
+
+.btn-light.btn-sm {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-select, .form-control {
+    border-radius: 8px;
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+@media (max-width: 768px) {
+    .col-md-1, .col-md-2, .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFavorite(propertyId) {
+    // TODO: Implement favorites functionality
+    const button = event.target.closest('button');
+    const icon = button.querySelector('i');
+    
+    if (icon.classList.contains('bi-heart')) {
+        icon.classList.remove('bi-heart');
+        icon.classList.add('bi-heart-fill');
+        button.classList.add('text-danger');
+    } else {
+        icon.classList.remove('bi-heart-fill');
+        icon.classList.add('bi-heart');
+        button.classList.remove('text-danger');
+    }
+}
+</script>
+{% endblock %}
+
