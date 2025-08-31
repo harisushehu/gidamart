@@ -1,0 +1,224 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Manage Local Governments{% endblock %}
+{% block page_title %}Manage Local Governments{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createLGModal">
+    <i class="bi bi-plus-circle"></i> Create Local Government
+</button>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Filter by State -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="state_filter" class="form-label">Filter by State</label>
+                        <select class="form-select" id="state_filter" name="state_id" onchange="this.form.submit()">
+                            <option value="">All States</option>
+                            {% for state in states %}
+                            <option value="{{ state.id }}" {{ 'selected' if state.id == selected_state_id }}>
+                                {{ state.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-outline-primary me-2">Filter</button>
+                        <a href="{{ url_for('admin.list_local_governments') }}" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Local Governments List -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    Local Government Areas
+                    <span class="badge bg-secondary">{{ local_governments|length }} total</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if local_governments %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>State</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lg in local_governments %}
+                            <tr>
+                                <td>{{ lg.name }}</td>
+                                <td>
+                                    <span class="badge bg-info">{{ lg.state.name }}</span>
+                                </td>
+                                <td>{{ lg.created_at.strftime('%Y-%m-%d %H:%M') if lg.created_at else 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                onclick="editLocalGovernment({{ lg.id }}, '{{ lg.name }}', {{ lg.state_id }})">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="deleteLocalGovernment({{ lg.id }}, '{{ lg.name }}')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-map fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">
+                        {% if selected_state_id %}
+                            No local government areas found for the selected state.
+                        {% else %}
+                            No local government areas found.
+                        {% endif %}
+                    </p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createLGModal">
+                        <i class="bi bi-plus-circle"></i> Create First Local Government
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Local Government Modal -->
+<div class="modal fade" id="createLGModal" tabindex="-1" aria-labelledby="createLGModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createLGModalLabel">Create New Local Government</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createLGForm" method="POST" action="{{ url_for('admin.create_local_government') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="lgName" class="form-label">Local Government Name</label>
+                        <input type="text" class="form-control" id="lgName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lgState" class="form-label">State</label>
+                        <select class="form-select" id="lgState" name="state_id" required>
+                            <option value="">Select a state</option>
+                            {% for state in states %}
+                            <option value="{{ state.id }}" {{ 'selected' if state.id == selected_state_id }}>
+                                {{ state.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Local Government</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Local Government Modal -->
+<div class="modal fade" id="editLGModal" tabindex="-1" aria-labelledby="editLGModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLGModalLabel">Edit Local Government</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editLGForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editLGName" class="form-label">Local Government Name</label>
+                        <input type="text" class="form-control" id="editLGName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLGState" class="form-label">State</label>
+                        <select class="form-select" id="editLGState" name="state_id" required>
+                            <option value="">Select a state</option>
+                            {% for state in states %}
+                            <option value="{{ state.id }}">{{ state.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Local Government</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editLocalGovernment(lgId, name, stateId) {
+    document.getElementById('editLGName').value = name;
+    document.getElementById('editLGState').value = stateId;
+    
+    document.getElementById('editLGForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('name', document.getElementById('editLGName').value);
+        formData.append('state_id', document.getElementById('editLGState').value);
+        
+        fetch(`/admin/local-governments/${lgId}`, {
+            method: 'PUT',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Local government updated successfully');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    };
+    
+    new bootstrap.Modal(document.getElementById('editLGModal')).show();
+}
+
+function deleteLocalGovernment(lgId, name) {
+    if (confirm(`Are you sure you want to delete local government: ${name}?`)) {
+        fetch(`/admin/local-governments/${lgId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Local government deleted successfully');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Manage States{% endblock %}
+{% block page_title %}Manage States{% endblock %}
+
+{% block page_actions %}
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStateModal">
+    <i class="bi bi-plus-circle"></i> Create State
+</button>
+{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    States
+                    <span class="badge bg-secondary">{{ states|length }} total</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if states %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Code</th>
+                                <th>Local Governments</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for state in states %}
+                            <tr>
+                                <td>{{ state.name }}</td>
+                                <td><code>{{ state.code }}</code></td>
+                                <td>
+                                    <span class="badge bg-info">{{ state.local_governments|length }} LGAs</span>
+                                    <a href="{{ url_for('admin.list_local_governments', state_id=state.id) }}" 
+                                       class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                                <td>{{ state.created_at.strftime('%Y-%m-%d %H:%M') if state.created_at else 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                onclick="editState({{ state.id }}, '{{ state.name }}', '{{ state.code }}')">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="deleteState({{ state.id }}, '{{ state.name }}')">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-geo-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No states found.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createStateModal">
+                        <i class="bi bi-plus-circle"></i> Create First State
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create State Modal -->
+<div class="modal fade" id="createStateModal" tabindex="-1" aria-labelledby="createStateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createStateModalLabel">Create New State</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createStateForm" method="POST" action="{{ url_for('admin.create_state') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="stateName" class="form-label">State Name</label>
+                        <input type="text" class="form-control" id="stateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stateCode" class="form-label">State Code</label>
+                        <input type="text" class="form-control" id="stateCode" name="code" required maxlength="10">
+                        <div class="form-text">Short code for the state (e.g., "YB" for Yobe).</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create State</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit State Modal -->
+<div class="modal fade" id="editStateModal" tabindex="-1" aria-labelledby="editStateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStateModalLabel">Edit State</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editStateForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editStateName" class="form-label">State Name</label>
+                        <input type="text" class="form-control" id="editStateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStateCode" class="form-label">State Code</label>
+                        <input type="text" class="form-control" id="editStateCode" name="code" required maxlength="10">
+                        <div class="form-text">Short code for the state (e.g., "YB" for Yobe).</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update State</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editState(stateId, name, code) {
+    document.getElementById('editStateName').value = name;
+    document.getElementById('editStateCode').value = code;
+    
+    document.getElementById('editStateForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append('name', document.getElementById('editStateName').value);
+        formData.append('code', document.getElementById('editStateCode').value);
+        
+        fetch(`/admin/states/${stateId}`, {
+            method: 'PUT',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('State updated successfully');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    };
+    
+    new bootstrap.Modal(document.getElementById('editStateModal')).show();
+}
+
+function deleteState(stateId, name) {
+    if (confirm(`Are you sure you want to delete state: ${name}?\n\nThis will also delete all associated local governments!`)) {
+        fetch(`/admin/states/${stateId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('State deleted successfully');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        });
+    }
+}
+</script>
+{% endblock %}

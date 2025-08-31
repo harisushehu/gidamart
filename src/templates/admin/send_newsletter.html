@@ -1,0 +1,359 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Send Newsletter{% endblock %}
+{% block page_title %}Send Newsletter{% endblock %}
+
+{% block admin_content %}
+<!-- Subscriber Info -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Recipients
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_subscribers }}</div>
+                        <div class="text-xs text-muted">Active subscribers will receive this newsletter</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-people fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="d-flex justify-content-end align-items-center h-100">
+            <a href="{{ url_for('admin.debug_email_test') }}" class="btn btn-warning mr-2">
+                <i class="bi bi-bug"></i> Debug Email
+            </a>
+            <a href="{{ url_for('admin.list_newsletter_customers') }}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Subscribers
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Form -->
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Compose Newsletter</h6>
+    </div>
+    <div class="card-body">
+        {% if total_subscribers > 0 %}
+        <form id="newsletterForm" method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="newsletter_type" class="form-label">Newsletter Type <span class="text-danger">*</span></label>
+                    <select class="form-control" id="newsletter_type" name="newsletter_type" required>
+                        <option value="">Select newsletter type...</option>
+                        <option value="weekly">Weekly Update</option>
+                        <option value="monthly">Monthly Report</option>
+                        <option value="quarterly">Quarterly Review</option>
+                        <option value="yearly">Annual Report</option>
+                        <option value="custom">Custom Newsletter</option>
+                    </select>
+                    <div class="form-text">Choose a template type or create a custom newsletter</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="subject" name="subject" 
+                           placeholder="Enter newsletter subject..." required maxlength="200">
+                    <div class="form-text">Will be auto-filled for template types</div>
+                </div>
+            </div>
+
+            <div id="customMessageSection" class="mb-3" style="display: none;">
+                <label for="message" class="form-label">Custom Message <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="message" name="message" rows="12" 
+                          placeholder="Write your custom newsletter content here..."></textarea>
+                <div class="form-text">
+                    You can use HTML formatting for better presentation. 
+                    <a href="#" onclick="insertSampleContent(); return false;">Insert sample template</a>
+                </div>
+            </div>
+
+            <div id="templateDataSection" class="mb-3" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Template Customization (Optional)</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="custom_message" class="form-label">Custom Message</label>
+                                    <textarea class="form-control" id="custom_message" name="custom_message" rows="3" 
+                                              placeholder="Add a personal message to the template..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="featured_properties" class="form-label">Featured Property IDs</label>
+                                    <input type="text" class="form-control" id="featured_properties" name="featured_properties" 
+                                           placeholder="e.g., 1,5,12 (comma-separated)">
+                                    <div class="form-text">Property IDs to highlight in the newsletter</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="mb-3">
+                <button type="button" class="btn btn-outline-info" onclick="togglePreview()">
+                    <i class="bi bi-eye"></i> Toggle Preview
+                </button>
+            </div>
+            
+            <div id="previewSection" class="mb-3" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Email Preview</strong>
+                    </div>
+                    <div class="card-body">
+                        <div><strong>Subject:</strong> <span id="previewSubject">-</span></div>
+                        <hr>
+                        <div id="previewMessage">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Confirmation -->
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Confirmation Required:</strong> 
+                This newsletter will be sent to <strong>{{ total_subscribers }}</strong> active subscribers. 
+                Please review your content carefully before sending.
+            </div>
+            
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="confirmSend" required>
+                <label class="form-check-label" for="confirmSend">
+                    I confirm that I want to send this newsletter to all {{ total_subscribers }} active subscribers
+                </label>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('admin.list_newsletter_customers') }}" class="btn btn-secondary">
+                    <i class="bi bi-x"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" id="sendButton">
+                    <i class="bi bi-send"></i> Send Newsletter
+                </button>
+            </div>
+        </form>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-exclamation-circle fa-3x text-gray-300 mb-3"></i>
+            <h5 class="text-muted">No Active Subscribers</h5>
+            <p class="text-muted">You need to have active newsletter subscribers before you can send a newsletter.</p>
+            <a href="{{ url_for('admin.list_newsletter_customers') }}" class="btn btn-outline-primary">
+                View Subscribers
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.fa-3x {
+    font-size: 3em;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+#previewMessage {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e3e6f0;
+    padding: 10px;
+    background-color: #f8f9fc;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Handle newsletter type selection
+document.getElementById('newsletter_type').addEventListener('change', function() {
+    const newsletterType = this.value;
+    const customMessageSection = document.getElementById('customMessageSection');
+    const templateDataSection = document.getElementById('templateDataSection');
+    const subjectField = document.getElementById('subject');
+    const messageField = document.getElementById('message');
+    
+    if (newsletterType === 'custom') {
+        customMessageSection.style.display = 'block';
+        templateDataSection.style.display = 'none';
+        subjectField.readOnly = false;
+        subjectField.placeholder = 'Enter newsletter subject...';
+        messageField.required = true;
+    } else if (newsletterType && newsletterType !== '') {
+        customMessageSection.style.display = 'none';
+        templateDataSection.style.display = 'block';
+        subjectField.readOnly = true;
+        messageField.required = false;
+        
+        // Auto-fill subject based on type
+        const now = new Date();
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+        const quarter = Math.floor((now.getMonth()) / 3) + 1;
+        
+        const subjects = {
+            'weekly': `Gidamart Weekly Update - ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`,
+            'monthly': `Gidamart Monthly Report - ${months[now.getMonth()]} ${now.getFullYear()}`,
+            'quarterly': `Gidamart Quarterly Review - Q${quarter} ${now.getFullYear()}`,
+            'yearly': `Gidamart Annual Report - Year ${now.getFullYear()} Review`
+        };
+        
+        subjectField.value = subjects[newsletterType] || '';
+    } else {
+        customMessageSection.style.display = 'none';
+        templateDataSection.style.display = 'none';
+        subjectField.readOnly = false;
+        subjectField.value = '';
+        subjectField.placeholder = 'Enter newsletter subject...';
+        messageField.required = true;
+    }
+});
+
+document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const sendButton = document.getElementById('sendButton');
+    const originalText = sendButton.innerHTML;
+    
+    // Show loading state
+    sendButton.disabled = true;
+    sendButton.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+    
+    const formData = new FormData(this);
+    
+    fetch('/admin/newsletter/send', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`Newsletter sent successfully to ${data.recipient_count} subscribers!`, 'success');
+            // Reset form
+            this.reset();
+            document.getElementById('confirmSend').checked = false;
+            document.getElementById('customMessageSection').style.display = 'none';
+            document.getElementById('templateDataSection').style.display = 'none';
+            // Redirect after a delay
+            setTimeout(() => {
+                window.location.href = '{{ url_for("admin.list_newsletter_customers") }}';
+            }, 2000);
+        } else {
+            showAlert(data.error || 'Failed to send newsletter', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Failed to send newsletter. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Reset button
+        sendButton.disabled = false;
+        sendButton.innerHTML = originalText;
+    });
+});
+
+function togglePreview() {
+    const previewSection = document.getElementById('previewSection');
+    const subject = document.getElementById('subject').value;
+    const newsletterType = document.getElementById('newsletter_type').value;
+    
+    if (previewSection.style.display === 'none') {
+        let previewContent = '-';
+        
+        if (newsletterType === 'custom') {
+            const message = document.getElementById('message').value;
+            previewContent = message || '-';
+        } else if (newsletterType && newsletterType !== '') {
+            previewContent = `This will use the ${newsletterType} template with your custom data.`;
+        }
+        
+        // Update preview content
+        document.getElementById('previewSubject').textContent = subject || '-';
+        document.getElementById('previewMessage').innerHTML = previewContent;
+        previewSection.style.display = 'block';
+    } else {
+        previewSection.style.display = 'none';
+    }
+}
+
+function insertSampleContent() {
+    const sampleSubject = 'New Properties Available - Weekly Update';
+    const sampleMessage = `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #4e73df;">Gidamart Property Updates</h2>
+    
+    <p>Dear Valued Subscriber,</p>
+    
+    <p>We hope this message finds you well. Here are the latest property updates and market insights:</p>
+    
+    <h3 style="color: #5a5c69;">🏠 New Properties This Week</h3>
+    <ul>
+        <li>3-bedroom apartment in Victoria Island - ₦25M</li>
+        <li>4-bedroom duplex in Lekki Phase 1 - ₦35M</li>
+        <li>2-bedroom flat in Ikeja GRA - ₦18M</li>
+    </ul>
+    
+    <h3 style="color: #5a5c69;">📈 Market Insights</h3>
+    <p>Property prices in Lagos have shown a steady increase of 8% this quarter, with high demand in prime locations.</p>
+    
+    <p style="background-color: #f8f9fc; padding: 15px; border-left: 4px solid #4e73df;">
+        <strong>💡 Tip:</strong> Now is a great time to invest in upcoming areas with development potential.
+    </p>
+    
+    <hr>
+    
+    <p>Thank you for subscribing to our newsletter!</p>
+    
+    <p>Best regards,<br>
+    <strong>The Gidamart Team</strong></p>
+    
+    <p style="font-size: 12px; color: #858796;">
+        If you no longer wish to receive these emails, you can unsubscribe at any time.
+    </p>
+</div>
+    `.trim();
+    
+    document.getElementById('subject').value = sampleSubject;
+    document.getElementById('message').value = sampleMessage;
+}
+
+function showAlert(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHTML = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert alert at the top of the content
+    const container = document.querySelector('.container-fluid');
+    container.insertAdjacentHTML('afterbegin', alertHTML);
+}
+</script>
+{% endblock %}

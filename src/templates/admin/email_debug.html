@@ -1,0 +1,118 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Email Debug Test{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-envelope-open-text"></i>
+                        Email Debug Test
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Debug Information for Namecheap Deployment</strong><br>
+                        This page will help identify why newsletter emails are failing.
+                    </div>
+                    
+                    <h4>Test Results - {{ debug_info.timestamp }}</h4>
+                    
+                    <!-- SMTP Configuration -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5>SMTP Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td><strong>SMTP Server:</strong></td>
+                                    <td>{{ debug_info.smtp_config.server }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SMTP Port:</strong></td>
+                                    <td>{{ debug_info.smtp_config.port }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Username:</strong></td>
+                                    <td>{{ debug_info.smtp_config.username }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Password Set:</strong></td>
+                                    <td>{{ "✅ Yes" if debug_info.smtp_config.password_set else "❌ No" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>From Email:</strong></td>
+                                    <td>{{ debug_info.smtp_config.from_email }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Test Results -->
+                    {% for test in debug_info.tests %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5>
+                                {{ test.name }} - 
+                                <span class="badge badge-{{ 'success' if test.status == 'PASSED' else 'danger' }}">
+                                    {{ test.status }}
+                                </span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for detail in test.details %}
+                                <p>{{ detail }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Solutions -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5>Recommended Solutions</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>If SMTP Connection Failed:</h6>
+                            <ol>
+                                <li><strong>Use Namecheap Email:</strong> Create an email account in your cPanel and update .env with:
+                                    <pre>SMTP_SERVER=mail.yourdomain.com
+SMTP_PORT=587
+SMTP_USERNAME=noreply@yourdomain.com
+SMTP_PASSWORD=your_cpanel_password
+FROM_EMAIL=noreply@yourdomain.com</pre>
+                                </li>
+                                <li><strong>Contact Namecheap Support:</strong> Ask if they block Gmail SMTP connections</li>
+                                <li><strong>Alternative Services:</strong> Use SendGrid, Mailgun, or Amazon SES</li>
+                            </ol>
+                            
+                            <h6>If Authentication Failed:</h6>
+                            <ol>
+                                <li>Verify your Gmail App Password is correct</li>
+                                <li>Ensure 2FA is enabled on your Gmail account</li>
+                                <li>Generate a fresh App Password</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('admin.send_newsletter') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Newsletter
+                        </a>
+                        <a href="{{ url_for('admin.debug_email_test') }}" class="btn btn-secondary">
+                            <i class="fas fa-sync"></i> Run Test Again
+                        </a>
+                        <a href="{{ url_for('admin.debug_recaptcha_test') }}" class="btn btn-warning">
+                            <i class="fas fa-shield-alt"></i> Debug reCAPTCHA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,371 @@
+{% extends "admin/base_admin.html" %}
+
+{% block admin_title %}Applications{% endblock %}
+{% block page_title %}User Applications{% endblock %}
+
+{% block admin_content %}
+<!-- Filter Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <form method="GET" class="d-flex gap-2">
+            <select class="form-select" name="status" onchange="this.form.submit()">
+                <option value="">All Applications</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            {% if status_filter %}
+            <a href="{{ url_for('admin.list_applications') }}" class="btn btn-outline-danger">
+                <i class="bi bi-x"></i> Clear
+            </a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="col-md-6 text-end">
+        <span class="badge bg-info">Total: {{ applications.total }}</span>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">User Applications</h6>
+        <div>
+            <span class="badge bg-warning me-2">
+                Pending: {{ applications.items|selectattr('status', 'equalto', 'pending')|list|length }}
+            </span>
+            <span class="badge bg-success me-2">
+                Approved: {{ applications.items|selectattr('status', 'equalto', 'approved')|list|length }}
+            </span>
+            <span class="badge bg-danger">
+                Rejected: {{ applications.items|selectattr('status', 'equalto', 'rejected')|list|length }}
+            </span>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if applications.items %}
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>User Email</th>
+                            <th>Property</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Applied On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications.items %}
+                        <tr id="application-{{ app.id }}">
+                            <td>
+                                <strong>{{ app.user.email }}</strong><br>
+                                <small class="text-muted">User ID: {{ app.user_id }}</small>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if app.property.images %}
+                                        <img src="{{ url_for('static', filename='uploads/' + app.property.images[0].image_filename) }}" 
+                                             alt="{{ app.property.title }}" class="img-thumbnail me-2" 
+                                             style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ app.property.title }}</strong><br>
+                                        <small class="text-muted">₦{{ "{:,.0f}".format(app.property.price) }}</small><br>
+                                        <small class="text-info">{{ app.property.location }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if app.message %}
+                                    <div class="message-preview" style="max-width: 200px;">
+                                        {% if app.message|length > 100 %}
+                                            {{ app.message[:100] }}...
+                                            <br><button class="btn btn-sm btn-link p-0 read-more-btn" data-app-id="{{ app.id }}">Read more</button>
+                                        {% else %}
+                                            {{ app.message }}
+                                        {% endif %}
+                                    </div>
+                                    <span id="full-message-{{ app.id }}" class="d-none">{{ app.message }}</span>
+                                {% else %}
+                                    <em class="text-muted">No message</em>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif app.status == 'approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% elif app.status == 'rejected' %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>{{ app.created_at.strftime('%Y-%m-%d') }}</div>
+                                <small class="text-muted">{{ app.created_at.strftime('%H:%M') }}</small>
+                            </td>
+                            <td>
+                                {% if app.status == 'pending' %}
+                                    <div class="btn-group-vertical" role="group">
+                                        <button type="button" class="btn btn-sm btn-success approve-btn" 
+                                                data-app-id="{{ app.id }}" data-status="approved" 
+                                                title="Approve Application">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger reject-btn" 
+                                                data-app-id="{{ app.id }}" data-status="rejected" 
+                                                title="Reject Application">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center">
+                                        <small class="text-muted">
+                                            {{ app.status.title() }}<br>
+                                            {% if app.updated_at %}
+                                                {{ app.updated_at.strftime('%Y-%m-%d') }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                                <div class="mt-2">
+                                    <a href="{{ url_for('admin.get_property', property_id=app.property_id) }}" 
+                                       class="btn btn-sm btn-outline-primary" title="View Property">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if applications.pages > 1 %}
+            <nav aria-label="Applications pagination">
+                <ul class="pagination justify-content-center">
+                    {% if applications.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.list_applications', page=applications.prev_num, status=status_filter) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in applications.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != applications.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.list_applications', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if applications.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.list_applications', page=applications.next_num, status=status_filter) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-inbox fa-3x text-gray-300 mb-3"></i>
+                <p class="text-muted">No applications found.</p>
+                {% if status_filter %}
+                <a href="{{ url_for('admin.list_applications') }}" class="btn btn-primary">
+                    View All Applications
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Full Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Application Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="fullMessageContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.fa-3x {
+    font-size: 3em;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.message-preview {
+    word-wrap: break-word;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Robust event delegation for approve/reject buttons using POST (avoid PUT 405s in production)
+(function () {
+  function requestUpdate(applicationId, status) {
+    const url = `/admin/applications/${applicationId}/approve`;
+    const payload = JSON.stringify({ status });
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      credentials: 'same-origin',
+      body: payload
+    });
+  }
+
+  async function handleResponse(response) {
+    if (!response) throw new Error('No response');
+
+    // Handle auth issues
+    if (response.status === 401 || response.status === 403 || response.redirected) {
+      alert('Your session has expired or you are not authorized. Please log in again.');
+      window.location.reload();
+      return null;
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok) {
+      // Try to extract JSON error if available
+      if (contentType.includes('application/json')) {
+        const data = await response.json();
+        const msg = data && (data.error || data.message) ? (data.error || data.message) : `HTTP ${response.status}`;
+        throw new Error(msg);
+      } else {
+        throw new Error(`HTTP ${response.status}`);
+      }
+    }
+
+    if (!contentType.includes('application/json')) {
+      // Unexpected HTML (e.g., login page from a redirect handled by server)
+      alert('Unexpected response from server. Please refresh and try again.');
+      return null;
+    }
+
+    return response.json();
+  }
+
+  document.addEventListener('click', function (evt) {
+    // Handle Read more
+    const readMore = evt.target.closest('.read-more-btn');
+    if (readMore) {
+      evt.preventDefault();
+      const id = readMore.getAttribute('data-app-id');
+      if (id) showFullMessage(id);
+      return;
+    }
+
+    const btn = evt.target.closest('.approve-btn, .reject-btn');
+    if (!btn) return;
+
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const applicationId = btn.getAttribute('data-app-id');
+    const status = btn.getAttribute('data-status');
+
+    if (!applicationId || !status) {
+      alert('Missing application data. Please refresh the page and try again.');
+      return;
+    }
+
+    const action = status === 'approved' ? 'approve' : 'reject';
+    if (!confirm(`Are you sure you want to ${action} this application?`)) {
+      return;
+    }
+
+    // Disable clicked button and show spinner
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Processing...';
+
+    requestUpdate(applicationId, status)
+      .then(res => handleResponse(res))
+      .then(data => {
+        if (!data) return; // handled above
+
+        if (data.success) {
+          // Update UI row
+          const row = document.getElementById(`application-${applicationId}`);
+          if (row) {
+            const statusCell = row.children[3];
+            const actionsCell = row.children[5];
+            const badgeClass = status === 'approved' ? 'bg-success' : 'bg-danger';
+
+            statusCell.innerHTML = `<span class="badge ${badgeClass}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
+            actionsCell.innerHTML = `
+              <div class="text-center">
+                <small class="text-muted">
+                  ${status.charAt(0).toUpperCase() + status.slice(1)}<br>
+                  ${new Date().toLocaleDateString()}
+                </small>
+              </div>
+              <div class="mt-2">
+                <a href="/admin/properties/${data.application.property_id}" class="btn btn-sm btn-outline-primary" title="View Property">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </div>
+            `;
+          }
+
+          const emailNote = status === 'approved'
+            ? 'The user has been notified via email and will be contacted by an agent.'
+            : 'The user has been notified via email with alternative property suggestions.';
+          alert(`${data.message}\n\n📧 ${emailNote}`);
+        } else if (data.error) {
+          alert(`Error: ${data.error}`);
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      })
+      .catch(err => {
+        console.error('Update failed:', err);
+        const msg = err && err.message ? err.message : 'Error updating application. Please try again.';
+        alert(msg);
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      });
+  });
+})();
+
+function showFullMessage(applicationId) {
+  const el = document.getElementById(`full-message-${applicationId}`);
+  const text = el ? el.textContent : 'No message';
+  const content = document.getElementById('fullMessageContent');
+  content.textContent = text;
+
+  const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+  modal.show();
+}
+</script>
+{% endblock %}

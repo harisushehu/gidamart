@@ -1,0 +1,125 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}reCAPTCHA Debug Test{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-shield-alt"></i>
+                        reCAPTCHA Debug Test
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Debug reCAPTCHA Configuration</strong><br>
+                        This page helps debug reCAPTCHA issues by showing configuration and testing responses.
+                    </div>
+                    
+                    <!-- Configuration Display -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Current reCAPTCHA Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td><strong>reCAPTCHA v2 Site Key:</strong></td>
+                                    <td>{{ recaptcha_site_key or 'NOT SET' }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>reCAPTCHA v3 Site Key:</strong></td>
+                                    <td>{{ recaptcha_v3_site_key or 'NOT SET' }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Dual Mode Enabled:</strong></td>
+                                    <td>{{ dual_recaptcha_enabled }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>reCAPTCHA Enabled:</strong></td>
+                                    <td>{{ recaptcha_enabled }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Test Form -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Test reCAPTCHA Form</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="recaptcha-test-form" method="POST" action="{{ url_for('admin.debug_recaptcha_test') }}">
+                                <div class="form-group">
+                                    <label for="test-email">Test Email:</label>
+                                    <input type="email" class="form-control" id="test-email" name="email" value="test@example.com" required>
+                                </div>
+                                
+                                {% if recaptcha_enabled and recaptcha_site_key %}
+                                <div class="form-group">
+                                    <label>reCAPTCHA v2:</label>
+                                    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if dual_recaptcha_enabled and recaptcha_v3_site_key %}
+                                <div class="form-group">
+                                    <label>reCAPTCHA v3:</label>
+                                    <p class="text-muted">v3 runs automatically in the background</p>
+                                </div>
+                                {% endif %}
+                                
+                                <button type="submit" class="btn btn-primary">Test reCAPTCHA</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    {% if test_results %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Test Results</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for result in test_results %}
+                                <p>{{ result }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('admin.send_newsletter') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Newsletter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load reCAPTCHA if enabled -->
+{% if recaptcha_enabled %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endif %}
+
+{% if dual_recaptcha_enabled and recaptcha_v3_site_key %}
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_v3_site_key }}"></script>
+<script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ recaptcha_v3_site_key }}', {action: 'register'}).then(function(token) {
+            // Add v3 token to form
+            var form = document.getElementById('recaptcha-test-form');
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'g-recaptcha-v3-response';
+            input.value = token;
+            form.appendChild(input);
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
