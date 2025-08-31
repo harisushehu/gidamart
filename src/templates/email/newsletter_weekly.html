@@ -1,0 +1,74 @@
+{% extends "email/newsletter_base.html" %}
+
+{% block title %}Gidamart Weekly Update{% endblock %}
+{% block subtitle %}Weekly Property Updates & Market Insights{% endblock %}
+
+{% block content %}
+<h2>🏠 This Week's Highlights</h2>
+
+<div class="stats">
+    <h3>📊 Weekly Market Summary</h3>
+    <ul>
+        <li><strong>New Properties:</strong> {{ new_properties_count or 'Several' }} new listings added</li>
+        <li><strong>Price Range:</strong> From ₦{{ min_price or '500,000' }} to ₦{{ max_price or '50,000,000' }}</li>
+        <li><strong>Popular Areas:</strong> {{ popular_areas or 'Lagos, Abuja, Port Harcourt' }}</li>
+        <li><strong>Property Types:</strong> Apartments, Houses, Commercial spaces</li>
+    </ul>
+</div>
+
+<h2>🌟 Featured Properties This Week</h2>
+
+{% if featured_properties %}
+    {% for property in featured_properties %}
+    <div class="property-highlight">
+        <h3>{{ property.title }}</h3>
+        <p><strong>Location:</strong> {{ property.location }}</p>
+        <p><strong>Price:</strong> ₦{{ "{:,}".format(property.price) }}</p>
+        <p><strong>Type:</strong> {{ property.property_type.title() }}</p>
+        {% if property.bedrooms %}
+        <p><strong>Bedrooms:</strong> {{ property.bedrooms }} | <strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+        {% endif %}
+        <p>{{ property.description[:150] }}{% if property.description|length > 150 %}...{% endif %}</p>
+        <a href="https://gidamart.com/property/{{ property.id }}" class="cta-button">View Details</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="property-highlight">
+        <h3>Premium Apartment in Victoria Island</h3>
+        <p><strong>Location:</strong> Victoria Island, Lagos</p>
+        <p><strong>Price:</strong> ₦25,000,000</p>
+        <p><strong>Type:</strong> Apartment</p>
+        <p><strong>Bedrooms:</strong> 3 | <strong>Bathrooms:</strong> 3</p>
+        <p>Luxury apartment with modern amenities, perfect for professionals and families.</p>
+        <a href="https://gidamart.com" class="cta-button">View All Properties</a>
+    </div>
+{% endif %}
+
+<h2>💡 Weekly Market Insights</h2>
+<p>The real estate market continues to show positive trends this week:</p>
+<ul>
+    <li><strong>Demand is High:</strong> Properties in prime locations are attracting multiple inquiries</li>
+    <li><strong>Investment Opportunities:</strong> Commercial properties showing strong ROI potential</li>
+    <li><strong>New Developments:</strong> Several new projects launching in emerging areas</li>
+    <li><strong>Financing Options:</strong> Banks offering competitive mortgage rates</li>
+</ul>
+
+<h2>🎯 Quick Tips for Property Buyers</h2>
+<div class="property-highlight">
+    <h3>This Week's Tip: Location Analysis</h3>
+    <p>Before making a property purchase, research the area's:</p>
+    <ul>
+        <li>Future development plans</li>
+        <li>Transportation accessibility</li>
+        <li>Security and amenities</li>
+        <li>Resale value potential</li>
+    </ul>
+</div>
+
+<p>{{ custom_message or "Thank you for being part of the Gidamart community. We're committed to helping you find your perfect property!" }}</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://gidamart.com/properties" class="cta-button">Browse All Properties</a>
+    <a href="https://gidamart.com/contact" class="cta-button">Contact Our Agents</a>
+</div>
+{% endblock %}

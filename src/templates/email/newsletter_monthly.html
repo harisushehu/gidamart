@@ -1,0 +1,89 @@
+{% extends "email/newsletter_base.html" %}
+
+{% block title %}Gidamart Monthly Report{% endblock %}
+{% block subtitle %}Monthly Property Market Analysis & Updates{% endblock %}
+
+{% block content %}
+<h2>📈 Monthly Market Overview</h2>
+
+<div class="stats">
+    <h3>📊 {{ current_month }} {{ current_year }} Performance</h3>
+    <ul>
+        <li><strong>Total Listings:</strong> {{ total_properties or '150+' }} properties</li>
+        <li><strong>New This Month:</strong> {{ monthly_new_properties or '35' }} fresh listings</li>
+        <li><strong>Properties Sold:</strong> {{ properties_sold or '28' }} successful transactions</li>
+        <li><strong>Average Price:</strong> ₦{{ average_price or '15,000,000' }}</li>
+        <li><strong>Most Active Areas:</strong> {{ top_areas or 'Lagos Island, Abuja Central, Port Harcourt GRA' }}</li>
+    </ul>
+</div>
+
+<h2>🏆 Top Performing Properties</h2>
+
+{% if top_properties %}
+    {% for property in top_properties %}
+    <div class="property-highlight">
+        <h3>{{ property.title }}</h3>
+        <p><strong>Location:</strong> {{ property.location }}</p>
+        <p><strong>Price:</strong> ₦{{ "{:,}".format(property.price) }}</p>
+        <p><strong>Type:</strong> {{ property.property_type.title() }}</p>
+        <p><strong>Status:</strong> {{ property.status.title() }}</p>
+        {% if property.bedrooms %}
+        <p><strong>Specs:</strong> {{ property.bedrooms }} beds, {{ property.bathrooms }} baths</p>
+        {% endif %}
+        <a href="https://gidamart.com/property/{{ property.id }}" class="cta-button">View Property</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="property-highlight">
+        <h3>Luxury Villa in Banana Island</h3>
+        <p><strong>Location:</strong> Banana Island, Lagos</p>
+        <p><strong>Price:</strong> ₦120,000,000</p>
+        <p><strong>Type:</strong> Villa</p>
+        <p><strong>Specs:</strong> 5 beds, 6 baths, Swimming pool</p>
+        <a href="https://gidamart.com" class="cta-button">Explore Premium Properties</a>
+    </div>
+{% endif %}
+
+<h2>📊 Market Trends Analysis</h2>
+<div class="property-highlight">
+    <h3>Key Insights for {{ current_month }}</h3>
+    <ul>
+        <li><strong>Price Movement:</strong> {{ price_trend or 'Stable with 2-3% growth in premium areas' }}</li>
+        <li><strong>Buyer Behavior:</strong> {{ buyer_trend or 'Increased interest in 2-3 bedroom apartments' }}</li>
+        <li><strong>Investment Focus:</strong> {{ investment_trend or 'Commercial properties gaining momentum' }}</li>
+        <li><strong>Regional Performance:</strong> {{ regional_trend or 'Lagos leads, Abuja growing steadily' }}</li>
+    </ul>
+</div>
+
+<h2>🎯 Monthly Investment Spotlight</h2>
+<p>This month, we're highlighting investment opportunities in:</p>
+<ul>
+    <li><strong>Emerging Areas:</strong> New developments with growth potential</li>
+    <li><strong>Commercial Spaces:</strong> Office buildings and retail locations</li>
+    <li><strong>Rental Properties:</strong> High-yield residential investments</li>
+    <li><strong>Land Banking:</strong> Strategic land acquisitions for future development</li>
+</ul>
+
+<h2>💼 Success Stories</h2>
+<div class="property-highlight">
+    <h3>Client Testimonial</h3>
+    <p><em>"Gidamart helped us find the perfect family home in just 2 weeks. Their team was professional, knowledgeable, and made the entire process seamless. Highly recommend!"</em></p>
+    <p><strong>- {{ testimonial_client or 'The Adebayo Family' }}</strong></p>
+</div>
+
+<h2>🔮 Looking Ahead</h2>
+<p>What to expect next month:</p>
+<ul>
+    <li>New luxury developments launching in Lekki</li>
+    <li>Government housing scheme updates</li>
+    <li>Infrastructure projects affecting property values</li>
+    <li>Special financing options for first-time buyers</li>
+</ul>
+
+<p>{{ custom_message or "Thank you for trusting Gidamart with your real estate needs. We're excited to continue serving you in the coming month!" }}</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://gidamart.com/investment" class="cta-button">Investment Opportunities</a>
+    <a href="https://gidamart.com/market-report" class="cta-button">Full Market Report</a>
+</div>
+{% endblock %}

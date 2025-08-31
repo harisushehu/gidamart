@@ -1,0 +1,109 @@
+{% extends "email/newsletter_base.html" %}
+
+{% block title %}Gidamart Quarterly Review{% endblock %}
+{% block subtitle %}Quarterly Market Analysis & Strategic Insights{% endblock %}
+
+{% block content %}
+<h2>📊 Quarterly Performance Review</h2>
+
+<div class="stats">
+    <h3>🎯 Q{{ current_quarter }} {{ current_year }} Highlights</h3>
+    <ul>
+        <li><strong>Total Properties Handled:</strong> {{ total_properties or '450+' }} listings</li>
+        <li><strong>Successful Transactions:</strong> {{ completed_sales or '85' }} properties sold</li>
+        <li><strong>New Partnerships:</strong> {{ new_partners or '12' }} developer collaborations</li>
+        <li><strong>Market Growth:</strong> {{ market_growth or '8.5%' }} quarter-over-quarter</li>
+        <li><strong>Client Satisfaction:</strong> {{ satisfaction_rate or '96%' }} positive feedback</li>
+    </ul>
+</div>
+
+<h2>🏆 Quarter's Best Performers</h2>
+
+{% if quarterly_highlights %}
+    {% for property in quarterly_highlights %}
+    <div class="property-highlight">
+        <h3>{{ property.title }}</h3>
+        <p><strong>Location:</strong> {{ property.location }}</p>
+        <p><strong>Value:</strong> ₦{{ "{:,}".format(property.price) }}</p>
+        <p><strong>Achievement:</strong> {{ property.achievement or 'Sold within 1 week' }}</p>
+        <a href="https://gidamart.com/property/{{ property.id }}" class="cta-button">Case Study</a>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="property-highlight">
+        <h3>Landmark Commercial Complex</h3>
+        <p><strong>Location:</strong> Central Business District, Abuja</p>
+        <p><strong>Value:</strong> ₦2,500,000,000</p>
+        <p><strong>Achievement:</strong> Largest commercial transaction of the quarter</p>
+        <a href="https://gidamart.com" class="cta-button">View Portfolio</a>
+    </div>
+{% endif %}
+
+<h2>📈 Quarterly Market Trends</h2>
+<div class="property-highlight">
+    <h3>Major Market Movements</h3>
+    <ul>
+        <li><strong>Residential Sector:</strong> {{ residential_trend or '7% price appreciation in luxury segment' }}</li>
+        <li><strong>Commercial Sector:</strong> {{ commercial_trend or 'Office spaces seeing 12% increase in demand' }}</li>
+        <li><strong>Land Appreciation:</strong> {{ land_trend or 'Strategic locations up 15% on average' }}</li>
+        <li><strong>Rental Market:</strong> {{ rental_trend or 'Short-term rentals showing strong yields' }}</li>
+        <li><strong>Infrastructure Impact:</strong> {{ infrastructure_trend or 'New roads boosting nearby property values by 20%' }}</li>
+    </ul>
+</div>
+
+<h2>🎯 Strategic Investment Insights</h2>
+<p>Our quarterly analysis reveals key investment opportunities:</p>
+
+<div class="property-highlight">
+    <h3>🏗️ Development Opportunities</h3>
+    <ul>
+        <li>Mixed-use developments in satellite towns</li>
+        <li>Affordable housing projects with government backing</li>
+        <li>Tech hub proximity properties</li>
+        <li>Green building initiatives</li>
+    </ul>
+</div>
+
+<div class="property-highlight">
+    <h3>💰 Financial Highlights</h3>
+    <ul>
+        <li><strong>ROI Performance:</strong> {{ roi_performance or 'Average 15% annual returns on our recommended properties' }}</li>
+        <li><strong>Financing Trends:</strong> {{ financing_trends or 'Mortgage rates stabilized at 18-22%' }}</li>
+        <li><strong>Investment Volume:</strong> {{ investment_volume or '₦45 billion in transactions facilitated' }}</li>
+        <li><strong>International Interest:</strong> {{ international_interest or '25% increase in diaspora investments' }}</li>
+    </ul>
+</div>
+
+<h2>🌟 Client Success Spotlight</h2>
+<div class="property-highlight">
+    <h3>Portfolio Success Story</h3>
+    <p><em>"Working with Gidamart for our property portfolio expansion has been exceptional. In this quarter alone, we acquired 5 strategic properties that have already appreciated by 12%. Their market insights are invaluable."</em></p>
+    <p><strong>- {{ client_name or 'Legacy Investments Ltd.' }}</strong></p>
+</div>
+
+<h2>🔮 Next Quarter Outlook</h2>
+<p>Our projections for the upcoming quarter:</p>
+<ul>
+    <li><strong>Market Expansion:</strong> New markets opening in emerging cities</li>
+    <li><strong>Technology Integration:</strong> Virtual tours and AI-powered matching</li>
+    <li><strong>Sustainability Focus:</strong> Green building certifications gaining importance</li>
+    <li><strong>Regulatory Updates:</strong> New property laws expected to boost transparency</li>
+    <li><strong>Infrastructure Projects:</strong> Major developments affecting property corridors</li>
+</ul>
+
+<h2>📚 Quarterly Market Report</h2>
+<p>Get access to our comprehensive quarterly market report featuring:</p>
+<ul>
+    <li>Detailed price analysis by location and property type</li>
+    <li>Investment performance metrics</li>
+    <li>Emerging market opportunities</li>
+    <li>Expert predictions and recommendations</li>
+</ul>
+
+<p>{{ custom_message or "Thank you for being part of our quarterly journey. Your trust drives our commitment to excellence in real estate services." }}</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://gidamart.com/quarterly-report" class="cta-button">Download Full Report</a>
+    <a href="https://gidamart.com/investment-advisory" class="cta-button">Investment Advisory</a>
+</div>
+{% endblock %}

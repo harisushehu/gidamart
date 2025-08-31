@@ -1,0 +1,97 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}My Profile - Gidamart{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                    {% if user.is_admin %}
+                        <p><span class="badge bg-success">Admin User</span></p>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{{ url_for('public.change_password') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-shield-check"></i> Change Password
+                        </a>
+                        <a href="{{ url_for('public.newsletter_preferences') }}" class="btn btn-outline-info">
+                            <i class="bi bi-envelope-heart"></i> Newsletter Preferences
+                        </a>
+                        {% if user.is_admin %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-success">
+                                <i class="bi bi-gear"></i> Admin Dashboard
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">My Applications</h5>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Status</th>
+                                        <th>Applied Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in applications %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ application.property.title }}</strong><br>
+                                            <small class="text-muted">{{ application.property.get_location_display() }}</small>
+                                        </td>
+                                        <td>
+                                            {% if application.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif application.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                            {% elif application.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ application.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('public.property_detail', property_id=application.property_id) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">You haven't applied for any properties yet.</p>
+                            <a href="{{ url_for('public.properties') }}" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Browse Properties
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

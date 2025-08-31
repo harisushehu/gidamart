@@ -1,0 +1,211 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}Newsletter Preferences - Gidamart{% endblock %}
+
+{% block public_content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-envelope-heart"></i> Newsletter Preferences
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-4">
+                            Customize which newsletters you'd like to receive from Gidamart. 
+                            Stay updated with property listings, market insights, and exclusive offers.
+                        </p>
+                        
+                        <form method="POST" id="newsletterForm">
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="newsletter_subscribed" 
+                                           name="newsletter_subscribed" {{ 'checked' if user.newsletter_subscribed else '' }}>
+                                    <label class="form-check-label fw-bold" for="newsletter_subscribed">
+                                        <i class="bi bi-envelope-check text-success"></i>
+                                        Subscribe to Gidamart Newsletters
+                                    </label>
+                                    <div class="form-text">
+                                        Enable this to receive our newsletters. You can unsubscribe at any time.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="newsletterTypes" style="{{ 'display: none;' if not user.newsletter_subscribed else '' }}">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-gear"></i> Newsletter Types
+                                </h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 newsletter-type-card">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="weekly_newsletter" 
+                                                           name="weekly_newsletter" {{ 'checked' if user.weekly_newsletter else '' }}>
+                                                    <label class="form-check-label fw-bold" for="weekly_newsletter">
+                                                        <i class="bi bi-calendar-week text-primary"></i>
+                                                        Weekly Newsletter
+                                                    </label>
+                                                </div>
+                                                <p class="text-muted mb-0 mt-2">
+                                                    Latest property listings, market updates, and featured properties every week.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 newsletter-type-card">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="monthly_newsletter" 
+                                                           name="monthly_newsletter" {{ 'checked' if user.monthly_newsletter else '' }}>
+                                                    <label class="form-check-label fw-bold" for="monthly_newsletter">
+                                                        <i class="bi bi-calendar-month text-info"></i>
+                                                        Monthly Newsletter
+                                                    </label>
+                                                </div>
+                                                <p class="text-muted mb-0 mt-2">
+                                                    Monthly market reports, investment tips, and property trends analysis.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 newsletter-type-card">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="quarterly_newsletter" 
+                                                           name="quarterly_newsletter" {{ 'checked' if user.quarterly_newsletter else '' }}>
+                                                    <label class="form-check-label fw-bold" for="quarterly_newsletter">
+                                                        <i class="bi bi-bar-chart text-warning"></i>
+                                                        Quarterly Newsletter
+                                                    </label>
+                                                </div>
+                                                <p class="text-muted mb-0 mt-2">
+                                                    Comprehensive market analysis, investment opportunities, and industry insights.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card h-100 newsletter-type-card">
+                                            <div class="card-body">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="yearly_newsletter" 
+                                                           name="yearly_newsletter" {{ 'checked' if user.yearly_newsletter else '' }}>
+                                                    <label class="form-check-label fw-bold" for="yearly_newsletter">
+                                                        <i class="bi bi-trophy text-success"></i>
+                                                        Annual Newsletter
+                                                    </label>
+                                                </div>
+                                                <p class="text-muted mb-0 mt-2">
+                                                    Year-end review, annual market summary, and predictions for the coming year.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{{ url_for('public.profile') }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to Profile
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="saveBtn">
+                                    <i class="bi bi-check-circle"></i> Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.newsletter-type-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #dee2e6;
+}
+
+.newsletter-type-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-check-input:checked + .form-check-label {
+    color: #0d6efd;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subscribeToggle = document.getElementById('newsletter_subscribed');
+    const newsletterTypes = document.getElementById('newsletterTypes');
+    
+    // Show/hide newsletter types based on subscription status
+    subscribeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            newsletterTypes.style.display = 'block';
+            // Enable all newsletter types by default when subscribing
+            document.querySelectorAll('#newsletterTypes input[type="checkbox"]').forEach(cb => {
+                cb.checked = true;
+            });
+        } else {
+            newsletterTypes.style.display = 'none';
+        }
+    });
+    
+    // Form submission
+    document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+    });
+    
+    // Visual feedback for checkbox changes
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.newsletter-type-card');
+            if (card) {
+                if (this.checked) {
+                    card.style.borderColor = '#0d6efd';
+                    card.style.backgroundColor = '#f8f9ff';
+                } else {
+                    card.style.borderColor = '#dee2e6';
+                    card.style.backgroundColor = '#fff';
+                }
+            }
+        });
+        
+        // Set initial state
+        checkbox.dispatchEvent(new Event('change'));
+    });
+});
+</script>
+{% endblock %}

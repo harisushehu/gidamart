@@ -1,0 +1,134 @@
+{% extends "email/newsletter_base.html" %}
+
+{% block title %}Gidamart Annual Report{% endblock %}
+{% block subtitle %}Annual Market Review & Future Outlook{% endblock %}
+
+{% block content %}
+<h2>🎉 {{ current_year }} Annual Review</h2>
+
+<div class="stats">
+    <h3>🏆 Year {{ current_year }} Achievements</h3>
+    <ul>
+        <li><strong>Total Properties Sold:</strong> {{ annual_sales or '320+' }} successful transactions</li>
+        <li><strong>Total Value Transacted:</strong> ₦{{ annual_value or '180,000,000,000' }} billion</li>
+        <li><strong>New Client Acquisition:</strong> {{ new_clients or '2,500+' }} satisfied customers</li>
+        <li><strong>Market Expansion:</strong> {{ new_locations or '8' }} new operational cities</li>
+        <li><strong>Team Growth:</strong> {{ team_growth or '40%' }} increase in expert agents</li>
+        <li><strong>Digital Innovation:</strong> {{ tech_achievements or 'Launched virtual tour platform' }}</li>
+    </ul>
+</div>
+
+<h2>🏆 Year's Milestone Transactions</h2>
+
+{% if annual_highlights %}
+    {% for property in annual_highlights %}
+    <div class="property-highlight">
+        <h3>{{ property.title }}</h3>
+        <p><strong>Location:</strong> {{ property.location }}</p>
+        <p><strong>Transaction Value:</strong> ₦{{ "{:,}".format(property.price) }}</p>
+        <p><strong>Significance:</strong> {{ property.significance or 'Record-breaking sale for the area' }}</p>
+        <p><strong>Impact:</strong> {{ property.impact or 'Set new market benchmark' }}</p>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="property-highlight">
+        <h3>Mega Commercial Development</h3>
+        <p><strong>Location:</strong> Victoria Island, Lagos</p>
+        <p><strong>Transaction Value:</strong> ₦15,000,000,000</p>
+        <p><strong>Significance:</strong> Largest single transaction in company history</p>
+        <p><strong>Impact:</strong> Established new luxury commercial standards</p>
+    </div>
+
+    <div class="property-highlight">
+        <h3>Residential Estate Project</h3>
+        <p><strong>Location:</strong> Abuja Satellite Towns</p>
+        <p><strong>Transaction Value:</strong> ₦8,500,000,000</p>
+        <p><strong>Significance:</strong> 500-unit affordable housing project</p>
+        <p><strong>Impact:</strong> Provided homes for middle-income families</p>
+    </div>
+{% endif %}
+
+<h2>📊 Annual Market Analysis</h2>
+<div class="property-highlight">
+    <h3>🎯 {{ current_year }} Market Performance</h3>
+    <ul>
+        <li><strong>Overall Growth:</strong> {{ overall_growth or '12.8% year-over-year property value increase' }}</li>
+        <li><strong>Best Performing Sector:</strong> {{ best_sector or 'Luxury residential (+18%)' }}</li>
+        <li><strong>Emerging Trend:</strong> {{ emerging_trend or 'Smart homes and eco-friendly properties' }}</li>
+        <li><strong>Regional Leader:</strong> {{ regional_leader or 'Lagos maintains 45% market share' }}</li>
+        <li><strong>Investment Pattern:</strong> {{ investment_pattern or 'Diaspora investments up 35%' }}</li>
+    </ul>
+</div>
+
+<h2>🌍 Market Expansion & Innovation</h2>
+<div class="property-highlight">
+    <h3>Breaking New Ground</h3>
+    <p>This year marked significant expansion:</p>
+    <ul>
+        <li><strong>Geographic Expansion:</strong> Entered {{ new_markets or 'Kano, Kaduna, and Enugu' }} markets</li>
+        <li><strong>Service Innovation:</strong> {{ service_innovations or 'Introduced 360° virtual tours and AI property matching' }}</li>
+        <li><strong>Partnership Growth:</strong> {{ partnerships or '25 new developer partnerships established' }}</li>
+        <li><strong>Technology Adoption:</strong> {{ tech_adoption or 'Mobile app downloads exceeded 100,000' }}</li>
+    </ul>
+</div>
+
+<h2>🎖️ Awards & Recognition</h2>
+<ul>
+    <li><strong>{{ award_1 or 'Real Estate Company of the Year 2024' }}</strong> - Nigerian Property Awards</li>
+    <li><strong>{{ award_2 or 'Best Customer Service in Real Estate' }}</strong> - Business Excellence Awards</li>
+    <li><strong>{{ award_3 or 'Innovation in Property Technology' }}</strong> - PropTech Nigeria</li>
+    <li><strong>{{ award_4 or 'Most Trusted Real Estate Brand' }}</strong> - Consumer Choice Awards</li>
+</ul>
+
+<h2>💝 Client Impact Stories</h2>
+<div class="property-highlight">
+    <h3>Transforming Lives Through Real Estate</h3>
+    <p><em>"Gidamart didn't just help us buy a house; they helped us build our future. From our first family home to our investment portfolio, they've been our trusted partners for 3 years running."</em></p>
+    <p><strong>- {{ featured_client or 'The Okafor Family' }}</strong></p>
+</div>
+
+<div class="property-highlight">
+    <h3>Business Growth Success</h3>
+    <p><em>"As a small business owner, finding the right commercial space was crucial. Gidamart's team understood our needs and budget constraints, helping us secure a location that tripled our revenue."</em></p>
+    <p><strong>- {{ business_client or 'Sarah Adebayo, CEO TechStart Hub' }}</strong></p>
+</div>
+
+<h2>🔮 Looking Forward: {{ next_year }} Vision</h2>
+<p>Our strategic priorities for the coming year:</p>
+
+<div class="property-highlight">
+    <h3>🎯 {{ next_year or (current_year|int + 1) }} Goals</h3>
+    <ul>
+        <li><strong>Market Leadership:</strong> Achieve #1 position in 3 new markets</li>
+        <li><strong>Digital Transformation:</strong> Launch AI-powered property valuation system</li>
+        <li><strong>Sustainability Focus:</strong> 50% of portfolio to be green-certified properties</li>
+        <li><strong>Client Experience:</strong> Implement 24/7 virtual assistance</li>
+        <li><strong>Community Impact:</strong> Facilitate 1,000 affordable housing units</li>
+    </ul>
+</div>
+
+<h2>📈 Market Predictions for {{ next_year or (current_year|int + 1) }}</h2>
+<ul>
+    <li><strong>Price Trends:</strong> {{ price_prediction or '8-12% growth expected in prime locations' }}</li>
+    <li><strong>Hot Sectors:</strong> {{ hot_sectors or 'Co-working spaces and mixed-use developments' }}</li>
+    <li><strong>Technology Impact:</strong> {{ tech_impact or 'Blockchain property transactions to gain adoption' }}</li>
+    <li><strong>Government Policies:</strong> {{ policy_impact or 'New tax incentives for first-time buyers expected' }}</li>
+    <li><strong>Infrastructure:</strong> {{ infrastructure_impact or 'New transport links to boost satellite town values' }}</li>
+</ul>
+
+<h2>🙏 Thank You Message</h2>
+<p>{{ thank_you_message or "As we close another successful year, we want to express our heartfelt gratitude to every client, partner, and team member who made this journey possible. Your trust, support, and collaboration have been the foundation of our success." }}</p>
+
+<p><strong>Here's to another year of turning property dreams into reality!</strong></p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="https://gidamart.com/annual-report" class="cta-button">Download Full Annual Report</a>
+    <a href="https://gidamart.com/2025-opportunities" class="cta-button">Explore {{ next_year or (current_year|int + 1) }} Opportunities</a>
+</div>
+
+<div class="property-highlight" style="text-align: center;">
+    <h3>🎊 Special Anniversary Offer</h3>
+    <p>To celebrate our achievements, we're offering exclusive benefits for our newsletter subscribers throughout January {{ next_year or (current_year|int + 1) }}!</p>
+    <a href="https://gidamart.com/anniversary-offer" class="cta-button">Claim Your Benefits</a>
+</div>
+{% endblock %}

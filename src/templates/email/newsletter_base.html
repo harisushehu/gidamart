@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gidamart Newsletter{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #666;
+            margin: 10px 0 0 0;
+            font-size: 1.1em;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .content h2 {
+            color: #007bff;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        .property-highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .property-highlight h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            border-top: 2px solid #e9ecef;
+            padding-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .unsubscribe {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: #999;
+        }
+        .unsubscribe a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .stats {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .stats h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GIDAMART</h1>
+            <p>{% block subtitle %}Your Trusted Real Estate Partner{% endblock %}</p>
+        </div>
+        
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        <div class="footer">
+            <p><strong>Stay Connected with Gidamart</strong></p>
+            <p>Follow us for the latest property updates and market insights!</p>
+            
+            <div style="margin: 20px 0;">
+                <a href="https://gidamart.com" class="cta-button">Visit Our Website</a>
+            </div>
+            
+            <p>© {{ current_year }} Gidamart. All rights reserved.</p>
+            
+            <div class="unsubscribe">
+                <p>You're receiving this email because you subscribed to our newsletter.</p>
+                <p>
+                    {% if preferences_link %}
+                        <a href="{{ preferences_link }}">Update your preferences</a>
+                    {% else %}
+                        <a href="{{ url_for('public.newsletter_preferences', _external=True) }}">Update your preferences</a>
+                    {% endif %}
+                    | 
+                    {% if unsubscribe_link %}
+                        <a href="{{ unsubscribe_link }}">Unsubscribe</a>
+                    {% else %}
+                        <a href="#">Unsubscribe</a>
+                    {% endif %}
+                </p>
+                <p style="font-size: 11px; color: #999; margin-top: 15px;">
+                    If you no longer wish to receive these emails, you can 
+                    {% if preferences_link %}
+                        <a href="{{ preferences_link }}" style="color: #007bff;">update your preferences</a>
+                    {% else %}
+                        update your preferences
+                    {% endif %}
+                    or unsubscribe at any time.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
