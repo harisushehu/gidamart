@@ -1,0 +1,153 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environment variables (IMPORTANT: Don't push sensitive data)
+.env
+.env.*
+*.env
+.env.localhost
+.env.production
+.env.development
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+app.db
+database/
+src/database/
+
+# Flask
+instance/
+.webassets-cache
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads (exclude large uploaded files)
+src/static/uploads/*
+!src/static/uploads/.gitkeep
+*/uploads/*
+uploads/*
+static/uploads/*
+*/static/uploads/*
+
+# Production packages and deployment files
+gidamart_production_ready/
+passenger_wsgi_backup.py
+passenger_wsgi_*_v*.py
+requirements-minimal.txt
+requirements-namecheap.txt
+requirements-python36.txt
+requirements-safe.txt
+requirements-production.txt
+requirements_minimal_production.txt
+*.sh
+create_production_package.sh
+
+# Documentation and markdown files (keep only README)
+ADMIN_SYSTEM.md
+API_DOCUMENTATION.md
+DEPLOYMENT*.md
+DUAL_RECAPTCHA_GUIDE.md
+ENHANCEMENT_SUMMARY.md
+FEATURE_SUMMARY.md
+FINAL_*.md
+INSTALLATION.md
+LOCALHOST_TESTING.md
+MYSQL_SETUP_GUIDE.md
+NAMECHEAP_*.md
+POSTGRESQL_MIGRATION_GUIDE.md
+PRODUCTION_*.md
+PROJECT_SUMMARY.md
+QUICK_DEPLOYMENT_FIX.md
+SECURITY_ENHANCEMENT_SUMMARY.md
+SQLITE_DEPLOYMENT_FIX.md
+URGENT_TROUBLESHOOTING.md
+*_SUMMARY.md
+*_GUIDE.md
+*_CHECKLIST.md
+*_FIXES.md
+
+# Test, debug, and development files
+test_*.py
+debug_*.py
+diagnose_*.py
+*_test.py
+*_debug.py
+*_diagnostic.py
+add_*.py
+check_*.py
+comprehensive_*.py
+deploy_*.py
+deployment_*.py
+fix_*.py
+final_*.py
+main_simple.py
+migrate_*.py
+production_*.py
+reset_*.py
+setup_*.py
+start_server.py
+status_check.py
+update_*.py
+verify_*.py
+
+# HTML test files
+test_*.html
+recaptcha_test.html
+contact_design_preview.html
+dual_recaptcha_example.html
+
+# Configuration files (keep templates only)
+.htaccess*
+env_*.txt
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Backup files
+*.backup
+*.bak
+*_backup.*
+
+# Cache
+.cache/
