@@ -34,5 +34,8 @@ Pillow==10.0.1
 # HTTP
 requests==2.31.0
 
+#Test
+pytest==8.3.5
+
 # WSGI Server
 Gunicorn==21.2.0
